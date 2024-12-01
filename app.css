@@ -1,55 +1,130 @@
-.card-wrapper {
-    margin: 5% 0;
-  }
-  
-/* You can adjust the image size by increasing/decreasing the width, height */
-.custom-circle-image {
-  width: 10vw; /* note i used vw not px for better responsive */
-  height: 10vw;
+/* General styles for layout */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
 }
 
-.custom-circle-image img {
-  object-fit: cover;
+.navbar {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    text-decoration: none;
+    color: white;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+/* Card and Image styling */
+.card-wrapper {
+    margin: 10px;
+    flex: 1 1 20%;
+    max-width: 300px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    overflow: hidden;
+}
+
+.image-wrapper {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.card-body {
+    text-align: center;
+    padding: 10px;
 }
 
 .card-title {
-  letter-spacing: 1.1px;
+    font-size: 18px;
+    font-weight: bold;
 }
 
-.card-text {
-  font-family: MerriweatherRegular;
-  font-size: 22px;
-  line-height: initial;
+/* File input and button styling */
+.input-wrapper {
+    margin-bottom: 20px;
 }
 
-.dropzone {
-  border-style: dashed;
+#fileInput {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
 }
 
-
-.error {
-  font-family: MerriweatherRegular;
-  font-size: 30px;
-  line-height: initial;
-  color: blue;
-  text-align: center;
+.submit-wrapper {
+    text-align: center;
 }
 
+#submitBtn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#submitBtn:hover {
+    background-color: #218838;
+}
+
+/* Table Styling */
 #classTable {
-  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
+    width: 100%;
+    border-collapse: collapse;
 }
 
-#classTable td, #classTable th {
-  border: 1px solid #ddd;
-  padding: 8px;
+#classTable th, #classTable td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
 }
 
 #classTable th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: #4CAF50;
-  color: white;
+    background-color: #f8f9fa;
+}
+
+/* Error message styling */
+.error {
+    display: none;
+    color: red;
+    font-weight: bold;
+}
+
+/* Result section */
+#resultHolder {
+    display: none;
+}
+
+#divClassTable {
+    display: none;
 }
