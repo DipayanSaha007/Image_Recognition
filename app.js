@@ -20,40 +20,48 @@ function init() {
         
         var url = "/classify_image";
 
-        $.post(url, {
-            image_data: imageData  // Send the image data to the backend
-        }, function(data, status) {
-            console.log(data);
-            if (!data || data.length == 0) {
-                $("#resultHolder").hide();
-                $("#divClassTable").hide();                
-                $("#error").show();
-                return;
-            }
-            
-            let match = null;
-            let bestScore = -1;
-            for (let i = 0; i < data.length; ++i) {
-                let maxScoreForThisClass = Math.max(...data[i].class_probability);
-                if (maxScoreForThisClass > bestScore) {
-                    match = data[i];
-                    bestScore = maxScoreForThisClass;
+        // Send the image data as JSON using $.ajax
+        $.ajax({
+            url: url,  // Backend URL
+            type: "POST",  // HTTP method
+            contentType: "application/json",  // Set the correct content type
+            data: JSON.stringify({ image_data: imageData }),  // Send data as JSON
+            success: function(data, status) {
+                console.log(data);
+                if (!data || data.length == 0) {
+                    $("#resultHolder").hide();
+                    $("#divClassTable").hide();                
+                    $("#error").show();
+                    return;
                 }
-            }
 
-            if (match) {
-                $("#error").hide();
-                $("#resultHolder").show();
-                $("#divClassTable").show();
-                $("#resultHolder").html($(`[data-player="${match.class}"`).html());
-
-                let classDictionary = match.class_dictionary;
-                for (let personName in classDictionary) {
-                    let index = classDictionary[personName];
-                    let proabilityScore = match.class_probability[index];
-                    let elementName = "#score_" + personName;
-                    $(elementName).html(proabilityScore);
+                let match = null;
+                let bestScore = -1;
+                for (let i = 0; i < data.length; ++i) {
+                    let maxScoreForThisClass = Math.max(...data[i].class_probability);
+                    if (maxScoreForThisClass > bestScore) {
+                        match = data[i];
+                        bestScore = maxScoreForThisClass;
+                    }
                 }
+
+                if (match) {
+                    $("#error").hide();
+                    $("#resultHolder").show();
+                    $("#divClassTable").show();
+                    $("#resultHolder").html($(`[data-player="${match.class}"`).html());
+
+                    let classDictionary = match.class_dictionary;
+                    for (let personName in classDictionary) {
+                        let index = classDictionary[personName];
+                        let probabilityScore = match.class_probability[index];
+                        let elementName = "#score_" + personName;
+                        $(elementName).html(probabilityScore);
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error:", error);  // Log error if any
             }
         });
     });
