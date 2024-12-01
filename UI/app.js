@@ -2,7 +2,7 @@ Dropzone.autoDiscover = false;
 
 function init() {
     let dz = new Dropzone("#dropzone", {
-    url: "https://image-recognition-backend.onrender.com/upload", // Replace with your backend URL
+    url: "/", // Replace with your backend URL
     maxFiles: 1,
     addRemoveLinks: true,
     dictDefaultMessage: "Some Message",
@@ -18,7 +18,7 @@ function init() {
     dz.on("complete", function (file) {
         let imageData = file.dataURL;
         
-        var url = "https://image-recognition-backend.onrender.com/classify_image"; // Replace with your backend URL
+        var url = "/classify_image"; // Replace with your backend URL
 
 
         $.post(url, {
