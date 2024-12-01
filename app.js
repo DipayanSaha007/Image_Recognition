@@ -1,6 +1,5 @@
 // Initialize the application
 function init() {
-    // Handle the file selection from the input
     let fileInput = document.getElementById("fileInput");
     let submitBtn = document.getElementById("submitBtn");
     let errorDiv = document.getElementById("error");
@@ -12,7 +11,6 @@ function init() {
     classTableDiv.style.display = "none";
 
     submitBtn.addEventListener('click', function() {
-        // Get the file from the input
         let file = fileInput.files[0];
         if (!file) {
             alert("Please select an image file.");
@@ -20,18 +18,20 @@ function init() {
         }
 
         let reader = new FileReader();
-        
-        // When the file is read successfully
+
         reader.onload = function(event) {
             let imageData = event.target.result;
+            let base64Data = imageData.split(',')[1]; // Ensure backend gets raw base64
 
-            // Ensure the server endpoint is correctly specified
+            console.log("Image Data:", imageData); // Log full base64 string
+            console.log("Sending to server:", JSON.stringify({ image_data: base64Data }));
+
             fetch("https://image-recognition-liard.vercel.app/classify_image", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ image_data: imageData }) // Sending base64 image data
+                body: JSON.stringify({ image_data: base64Data })
             })
             .then(response => {
                 if (!response.ok) {
@@ -49,7 +49,7 @@ function init() {
                     return;
                 }
 
-                // Handle the classification result (populate UI with results)
+                // Process results (handle data from server)
                 let match = null;
                 let bestScore = -1;
                 for (let i = 0; i < data.length; ++i) {
@@ -71,7 +71,7 @@ function init() {
                         let index = classDictionary[player];
                         let probabilityScore = match.class_probability[index];
                         let elementName = "#score_" + player;
-                        document.querySelector(elementName).textContent = probabilityScore.toFixed(2); // Show two decimal places
+                        document.querySelector(elementName).textContent = probabilityScore.toFixed(2);
                     }
                 }
             })
@@ -84,7 +84,7 @@ function init() {
             });
         };
 
-        reader.readAsDataURL(file);  // Read the file as base64 string
+        reader.readAsDataURL(file);
     });
 }
 
