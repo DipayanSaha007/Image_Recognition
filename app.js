@@ -30,12 +30,12 @@ function init() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ image_data: imageData })
+                body: JSON.stringify({ image_data: imageData }) // Sending base64 image data
             })
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                if (!data || data.length === 0) {
+                if (data.error) {
                     errorDiv.style.display = "block";
                     resultHolder.style.display = "none";
                     classTableDiv.style.display = "none";
