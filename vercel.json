@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/classify_image",
+      "destination": "https://image-recognition-backend.onrender.com/classify_image"
+    }
+  ]
+}
