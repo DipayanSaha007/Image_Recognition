@@ -15,6 +15,7 @@ function init() {
         // Get the file from the input
         let file = fileInput.files[0];
         if (!file) {
+            alert("Please select an image file.");
             return;
         }
 
@@ -24,18 +25,24 @@ function init() {
         reader.onload = function(event) {
             let imageData = event.target.result;
 
-            // Send base64 image data to the server via AJAX
-            fetch("/classify_image", {
+            // Ensure the server endpoint is correctly specified
+            fetch("https://image-recognition-liard.vercel.app/classify_image", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ image_data: imageData }) // Sending base64 image data
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
-                console.log(data);
                 if (data.error) {
+                    console.error("Server Error:", data.error);
+                    errorDiv.textContent = data.error;
                     errorDiv.style.display = "block";
                     resultHolder.style.display = "none";
                     classTableDiv.style.display = "none";
@@ -64,12 +71,13 @@ function init() {
                         let index = classDictionary[player];
                         let probabilityScore = match.class_probability[index];
                         let elementName = "#score_" + player;
-                        document.querySelector(elementName).textContent = probabilityScore;
+                        document.querySelector(elementName).textContent = probabilityScore.toFixed(2); // Show two decimal places
                     }
                 }
             })
             .catch(error => {
                 console.error("Error:", error);
+                errorDiv.textContent = "An error occurred while processing the request.";
                 errorDiv.style.display = "block";
                 resultHolder.style.display = "none";
                 classTableDiv.style.display = "none";
