@@ -1,43 +1,43 @@
-Dropzone.autoDiscover = false;
+Dropzone.autoDiscover = false;  // Prevent Dropzone from automatically attaching to elements
 
 function init() {
     let dz = new Dropzone("#dropzone", {
-        url: "/classify_image",  // Update the URL to match the backend endpoint
+        url: "/classify_image",  // Endpoint to process the image
         maxFiles: 1,
         addRemoveLinks: true,
-        dictDefaultMessage: "Some Message",
-        autoProcessQueue: false,
-        acceptedFiles: 'image/*', // Restrict the file types to images
+        dictDefaultMessage: "Drop an image here or click to upload",
+        autoProcessQueue: false,  // Don't automatically process the file
+        acceptedFiles: 'image/*', // Accept only image files
         init: function() {
-            // Intercept file processing and convert the image to base64
             this.on("addedfile", function(file) {
-                // Read the file as base64 when it's added
                 let reader = new FileReader();
+
+                // Convert the image to base64 string
                 reader.onload = function(event) {
-                    // The base64 string will be in event.target.result
-                    let imageData = event.target.result;  // Base64-encoded image data
-                    
-                    // Send base64 image data to the backend via AJAX
+                    let imageData = event.target.result;
+
+                    // Send base64 image data to the server via AJAX
                     $.ajax({
-                        url: "/classify_image",  // Backend URL
-                        type: "POST",  // HTTP method
-                        contentType: "application/json",  // Ensure correct content type
-                        data: JSON.stringify({ image_data: imageData }),  // Send as JSON
-                        success: function(data, status) {
-                            console.log(data);
-                            if (!data || data.length == 0) {
-                                $("#resultHolder").hide();
-                                $("#divClassTable").hide();                
+                        url: "/classify_image",  // Your backend endpoint
+                        type: "POST",  // Send POST request
+                        contentType: "application/json",  // Set content type to JSON
+                        data: JSON.stringify({ image_data: imageData }),  // Send image data as JSON
+                        success: function(response) {
+                            console.log(response);
+                            if (!response || response.length === 0) {
                                 $("#error").show();
+                                $("#resultHolder").hide();
+                                $("#divClassTable").hide();
                                 return;
                             }
 
+                            // Handle the classification result (populate UI with results)
                             let match = null;
                             let bestScore = -1;
-                            for (let i = 0; i < data.length; ++i) {
-                                let maxScoreForThisClass = Math.max(...data[i].class_probability);
+                            for (let i = 0; i < response.length; ++i) {
+                                let maxScoreForThisClass = Math.max(...response[i].class_probability);
                                 if (maxScoreForThisClass > bestScore) {
-                                    match = data[i];
+                                    match = response[i];
                                     bestScore = maxScoreForThisClass;
                                 }
                             }
@@ -46,19 +46,22 @@ function init() {
                                 $("#error").hide();
                                 $("#resultHolder").show();
                                 $("#divClassTable").show();
-                                $("#resultHolder").html($(`[data-player="${match.class}"`).html());
+                                $("#resultHolder").html($(`[data-player="${match.class}"]`).html());
 
                                 let classDictionary = match.class_dictionary;
-                                for (let personName in classDictionary) {
-                                    let index = classDictionary[personName];
+                                for (let player in classDictionary) {
+                                    let index = classDictionary[player];
                                     let probabilityScore = match.class_probability[index];
-                                    let elementName = "#score_" + personName;
+                                    let elementName = "#score_" + player;
                                     $(elementName).html(probabilityScore);
                                 }
                             }
                         },
                         error: function(xhr, status, error) {
                             console.error("Error:", error);  // Log error if any
+                            $("#error").show();
+                            $("#resultHolder").hide();
+                            $("#divClassTable").hide();
                         }
                     });
                 };
@@ -67,16 +70,15 @@ function init() {
         }
     });
 
-    $("#submitBtn").on('click', function(e) {
-        dz.processQueue();		
+    // Trigger the Dropzone queue to process the file when the button is clicked
+    $("#submitBtn").on('click', function() {
+        dz.processQueue();  // Trigger the file upload process
     });
 }
 
 $(document).ready(function() {
-    console.log("ready!");
+    init();
     $("#error").hide();
     $("#resultHolder").hide();
     $("#divClassTable").hide();
-
-    init();
 });
